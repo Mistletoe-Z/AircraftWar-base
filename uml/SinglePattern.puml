@@ -1,0 +1,49 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+
+package "edu.hitsz.aircraft" <<Folder>> {
+
+    abstract class AbstractAircraft {
+        # maxHp: int
+        # hp: int
+        + AbstractAircraft(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+        + decreaseHp(decrease: int): void
+        + getHp(): int
+        + {abstract} shoot(): List<BaseBullet>
+    }
+
+    class HeroAircraft <<Singleton>> {
+        ' 静态私有实例变量
+        - {static} instance: HeroAircraft
+
+        - shootNum: int
+        - power: int
+        - direction: int
+
+        ' 私有构造方法，防止外部 new
+        - HeroAircraft(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+
+        ' 公开的静态获取方法
+        + {static} getInstance(): HeroAircraft
+        + forward(): void
+        + shoot(): List<BaseBullet>
+    }
+}
+
+' 继承关系
+AbstractAircraft <|-- HeroAircraft
+
+' 关联关系（自己指向自己，体现单例）
+HeroAircraft "1" *--> "1" HeroAircraft : instance
+
+'note right of HeroAircraft::getInstance
+'  // 懒汉式或双重检查锁实现示例
+'  if (instance == null) {
+'      instance = new HeroAircraft(...);
+'  }
+'  return instance;
+'end note
+
+@enduml

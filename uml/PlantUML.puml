@@ -1,0 +1,88 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+skinparam shadowing false
+
+package "edu.hitsz.basic" <<Folder>> {
+    abstract class AbstractFlyingObject {
+        # locationX: int
+        # locationY: int
+        # speedX: int
+        # speedY: int
+        # image: BufferedImage
+        # width: int
+        # height: int
+        # isValid: boolean
+        + AbstractFlyingObject()
+        + AbstractFlyingObject(locationX: int, locationY: int, speedX: int, speedY: int)
+        + forward(): void
+        + crash(flyingObject: AbstractFlyingObject): boolean
+        + getLocationX(): int
+        + getLocationY(): int
+        + setLocation(locationX: double, locationY: double): void
+        + getSpeedY(): int
+        + getImage(): BufferedImage
+        + getWidth(): int
+        + getHeight(): int
+        + vanish(): void
+        + notValid(): boolean
+    }
+}
+
+package "edu.hitsz.aircraft" <<Folder>> {
+    abstract class AbstractAircraft {
+        # maxHp: int
+        # hp: int
+        + AbstractAircraft(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+        + decreaseHp(decrease: int): void
+        + getHp(): int
+        + {abstract} shoot(): List<BaseBullet>
+    }
+
+    class HeroAircraft {
+        - shootNum: int
+        - power: int
+        - direction: int
+        + HeroAircraft(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+        + forward(): void
+        + shoot(): List<BaseBullet>
+    }
+
+    class MobEnemy {
+        + MobEnemy(locationX: int, locationY: int, speedX: int, speedY: int, hp: int)
+        + forward(): void
+        + shoot(): List<BaseBullet>
+    }
+}
+
+package "edu.hitsz.bullet" <<Folder>> {
+    abstract class BaseBullet {
+        - power: int
+        + BaseBullet(locationX: int, locationY: int, speedX: int, speedY: int, power: int)
+        + forward(): void
+        + getPower(): int
+    }
+
+    class EnemyBullet {
+        + EnemyBullet(locationX: int, locationY: int, speedX: int, speedY: int, power: int)
+    }
+
+    class HeroBullet {
+        + HeroBullet(locationX: int, locationY: int, speedX: int, speedY: int, power: int)
+    }
+}
+
+' 继承关系
+AbstractFlyingObject <|-- AbstractAircraft
+AbstractFlyingObject <|-- BaseBullet
+
+AbstractAircraft <|-- HeroAircraft
+AbstractAircraft <|-- MobEnemy
+
+BaseBullet <|-- EnemyBullet
+BaseBullet <|-- HeroBullet
+
+' 依赖关系 (工厂方法/生产行为)
+AbstractAircraft ..> BaseBullet : produces >
+
+@enduml
