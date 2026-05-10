@@ -38,6 +38,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject implements O
     public int getHp() {
         return hp;
     }
+    public void setHp(int hp) { this.hp = hp; this.maxHp = hp; }
 
 
 

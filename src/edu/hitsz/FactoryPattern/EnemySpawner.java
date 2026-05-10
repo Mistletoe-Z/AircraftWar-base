@@ -30,10 +30,10 @@ public class EnemySpawner {
         int expectedBossCount = score / BOSS_SCORE_THRESHOLD;
 
         //该刷 Boss 了
-        if (expectedBossCount > bossSpawnCount) {
-            bossSpawnCount++;
-            return factoryDict.get(4).createAircraft();
-        }
+//        if (expectedBossCount > bossSpawnCount) {
+//            bossSpawnCount++;
+//            return factoryDict.get(4).createAircraft();
+//        }
 
         Random random = new Random();
         int rand = random.nextInt(100) + 1;

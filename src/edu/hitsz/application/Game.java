@@ -24,7 +24,7 @@ import java.util.concurrent.*;
  * 游戏主面板，游戏启动
  * @author hitsz
  */
-public class Game extends JPanel {
+public abstract class Game extends JPanel {
 
     private int backGroundTop = 0;
 
@@ -34,7 +34,7 @@ public class Game extends JPanel {
     private final int timeInterval = 40;
 
     private final HeroAircraft heroAircraft;
-    private final List<AbstractAircraft> enemyAircrafts;
+    protected final List<AbstractAircraft> enemyAircrafts;
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     //道具
@@ -52,7 +52,7 @@ public class Game extends JPanel {
     private int shootCounter = 0;
 
     //当前玩家分数
-    private int score = 0;
+    protected int score = 0;
 
     //游戏结束标志
     private boolean gameOverFlag = false;
@@ -62,8 +62,11 @@ public class Game extends JPanel {
     private boolean isGameOverDialogShown = false;
     // 🌟 核心新增：用于存放根据难度选定的背景图片
     private Image bgImage;
-    //游戏音乐
-
+    //
+    protected abstract void generateBoss();
+    protected abstract void updateDifficulty();
+    protected void enhanceEnemy(AbstractAircraft enemy) {
+    }
 
     public Game(String difficulty) {
         this.difficulty = difficulty;
@@ -103,13 +106,19 @@ public class Game extends JPanel {
             @Override
             public void run() {
 
+                updateDifficulty();
+
                 enemySpawnCounter++;
                 if (enemySpawnCounter >=enemySpawnCycle) {
                     enemySpawnCounter = 0;
+                    generateBoss();
                     // 产生普通敌机
                     if (enemyAircrafts.size() < enemyMaxNumber) {
-                        enemyAircrafts.add(EnemySpawner.generateRandomEnemy(score));// 工厂模式
+                        AbstractAircraft newEnemy = EnemySpawner.generateRandomEnemy(score);
+                        //enemyAircrafts.add(EnemySpawner.generateRandomEnemy(score));// 工厂模式
                         //enemyAircrafts.add(AircraftFactory.createAircraft(AircraftFactory.RandomType(score))); //简单工厂模式
+                        enhanceEnemy(newEnemy);
+                        enemyAircrafts.add(newEnemy);
                     }
                 }
 

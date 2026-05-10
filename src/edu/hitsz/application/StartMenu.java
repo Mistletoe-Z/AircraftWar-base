@@ -19,48 +19,35 @@ public class StartMenu {
         normalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1. 创建游戏对象（后续我们还要把 "normal" 这个难度传进去）
-                Game game = new Game("NORMAL");
+                // 🌟 实例化普通模式对应的子类
+                Game game = new NormalGame();
 
-                // 2. 把游戏画面加到幻灯片幕布里，起个代号叫 "game"
                 Main.cardPanel.add(game, "game");
-
-                // 3. 遥控放映机，切换到代号为 "game" 的这张幻灯片
                 Main.cardLayout.show(Main.cardPanel, "game");
-
-                // 4. 告诉游戏开始运行（极其重要！不然画面是静止的）
                 game.action();
             }
         });
+
         hardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1. 创建游戏对象（后续我们还要把 "hard" 这个难度传进去）
-                Game game = new Game("HARD");
+                // 🌟 实例化困难模式对应的子类
+                Game game = new HardGame();
 
-                // 2. 把游戏画面加到幻灯片幕布里，起个代号叫 "game"
                 Main.cardPanel.add(game, "game");
-
-                // 3. 遥控放映机，切换到代号为 "game" 的这张幻灯片
                 Main.cardLayout.show(Main.cardPanel, "game");
-
-                // 4. 告诉游戏开始运行（极其重要！不然画面是静止的）
                 game.action();
             }
         });
+
         easyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1. 创建游戏对象（后续我们还要把 "EASY" 这个难度传进去）
-                Game game = new Game("EASY");
+                // 🌟 实例化简单模式对应的子类
+                Game game = new EasyGame();
 
-                // 2. 把游戏画面加到幻灯片幕布里，起个代号叫 "game"
                 Main.cardPanel.add(game, "game");
-
-                // 3. 遥控放映机，切换到代号为 "game" 的这张幻灯片
                 Main.cardLayout.show(Main.cardPanel, "game");
-
-                // 4. 告诉游戏开始运行（极其重要！不然画面是静止的）
                 game.action();
             }
         });
