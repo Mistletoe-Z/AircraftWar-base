@@ -4,7 +4,13 @@ import edu.hitsz.FactoryPattern.EnemySpawner;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
+import edu.hitsz.dao.Record;
+import edu.hitsz.dao.RecordDao;
+import edu.hitsz.dao.RecordDaoImpl;
+import edu.hitsz.observer.Observer;
 import edu.hitsz.props.AbstractProp;
+import edu.hitsz.props.Bombbonus;
+import edu.hitsz.props.Frozenbonus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,8 +56,28 @@ public class Game extends JPanel {
 
     //游戏结束标志
     private boolean gameOverFlag = false;
+    // 🌟 核心新增：记录当前游戏难度
+    private String difficulty;
+    // 🌟 核心新增：标记是否已经弹出过结束对话框，防止重复弹窗
+    private boolean isGameOverDialogShown = false;
+    // 🌟 核心新增：用于存放根据难度选定的背景图片
+    private Image bgImage;
+    //游戏音乐
 
-    public Game() {
+
+    public Game(String difficulty) {
+        this.difficulty = difficulty;
+
+        if ("EASY".equals(difficulty)) {
+            this.bgImage = ImageManager.BACKGROUND_IMAGE;
+        } else if ("NORMAL".equals(difficulty)) {
+            this.bgImage = ImageManager.BACKGROUND_IMAGE2; // 确保 ImageManager 里有定义这个变量
+        } else if ("HARD".equals(difficulty)) {
+            this.bgImage = ImageManager.BACKGROUND_IMAGE3;
+        } else {
+            this.bgImage = ImageManager.BACKGROUND_IMAGE;
+        }
+
         heroAircraft = HeroAircraft.getInstance();
 
         enemyAircrafts = new LinkedList<>();
@@ -70,6 +96,7 @@ public class Game extends JPanel {
      * 游戏启动入口，执行游戏逻辑
      */
     public void action() {
+        AudioManager.getInstance().playNormalBGM();
 
         // 定时任务：绘制、对象产生、碰撞判定、及结束判定
         TimerTask task = new TimerTask() {
@@ -160,8 +187,9 @@ public class Game extends JPanel {
             if(bullet.notValid()){
                 continue;//如果这颗子弹失效了，那就别管他了，去看下一颗子弹
             }
-            //如果撞击到了
+            //如果撞击到了子弹
             if(heroAircraft.crash(bullet)){
+                AudioManager.getInstance().bullethitSound();
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
             }
@@ -180,6 +208,7 @@ public class Game extends JPanel {
                 if (enemyAircraft.crash(bullet)) {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
+                    AudioManager.getInstance().bullethitSound();
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
@@ -201,7 +230,29 @@ public class Game extends JPanel {
             if (prop.notValid()) continue;
 
             if (heroAircraft.crash(prop)) {
+                // 🌟 如果吃到的是炸弹
+                if (prop instanceof Bombbonus) {
+                    // 把屏幕上的敌机全部拉进粉丝群
+                    for (AbstractAircraft enemy : enemyAircrafts) {
+                        ((Bombbonus) prop).addObserver(enemy);
+                    }
+                    // 把屏幕上的敌方子弹也拉进粉丝群
+                    for (BaseBullet bullet : enemyBullets) {
+                        ((Bombbonus) prop).addObserver((Observer) bullet);
+                    }
+                }
+                if (prop instanceof Frozenbonus) {
+                    // 把屏幕上的敌机全部拉进粉丝群
+                    for (AbstractAircraft enemy : enemyAircrafts) {
+                        ((Frozenbonus) prop).addObserver(enemy);
+                    }
+                    // 把屏幕上的敌方子弹也拉进粉丝群
+                    for (BaseBullet bullet : enemyBullets) {
+                        ((Frozenbonus) prop).addObserver((Observer) bullet);
+                    }
+                }
                 // 触发道具生效逻辑，把英雄机传进去
+                AudioManager.getInstance().playGetSupplySound();
                 prop.active(heroAircraft,enemyAircrafts);
                 // 道具被吃掉，标记消失
                 prop.vanish();
@@ -232,9 +283,40 @@ public class Game extends JPanel {
     private void checkResultAction(){
         // 游戏结束检查英雄机是否存活
         if (heroAircraft.getHp() <= 0) {
+            AudioManager.getInstance().gameoverSound();
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
             System.out.println("Game Over!");
+
+            if (!isGameOverDialogShown) {
+                isGameOverDialogShown = true; // 标记为已弹窗
+
+                // 1. 弹出输入名字对话框
+                String userName = JOptionPane.showInputDialog(
+                        Main.cardPanel,
+                        "游戏结束，你的得分为：" + score + "。\n请输入名字记录得分：",
+                        "输入",
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                // 2. 如果玩家点了确定并输入了名字，通过 DAO 存入文件
+                if (userName != null && !userName.trim().isEmpty()) {
+                    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM-dd HH:mm");
+                    String time = formatter.format(new java.util.Date());
+                    edu.hitsz.dao.Record record = new edu.hitsz.dao.Record(userName, score, time);
+
+                    edu.hitsz.dao.RecordDao recordDao = new edu.hitsz.dao.RecordDaoImpl(this.difficulty);
+                    recordDao.addRecord(record);
+                }
+
+                // 3. 实例化排行榜界面（把难度传进去读对应文件）
+                ScoreBoard scoreBoard = new ScoreBoard(this.difficulty);
+
+                // 4. 将排行榜加到幻灯片幕布里，并切换显示！
+                Main.cardPanel.add(scoreBoard.getMainPanel(), "scoreBoard");
+                Main.cardLayout.show(Main.cardPanel, "scoreBoard");
+            }
+            AudioManager.getInstance().stopNormalBGM();
         }
     };
 
@@ -250,8 +332,8 @@ public class Game extends JPanel {
         super.paint(g);
 
         // 绘制背景,图片滚动
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        g.drawImage(this.bgImage, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+        g.drawImage(this.bgImage, 0, this.backGroundTop, null);
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;

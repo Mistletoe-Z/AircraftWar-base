@@ -19,6 +19,8 @@ public abstract class AbstractFlyingObject {
     // x,y轴移动速度
     protected int speedX;
     protected int speedY;
+    protected int originalSpeedX;
+    protected int originalSpeedY;
 
     //图片, null 表示未设置
     protected BufferedImage image = null;
@@ -40,6 +42,8 @@ public abstract class AbstractFlyingObject {
         this.locationY = locationY;
         this.speedX = speedX;
         this.speedY = speedY;
+        this.originalSpeedX = speedX;
+        this.originalSpeedY = speedY;
     }
 
     /**
@@ -103,6 +107,9 @@ public abstract class AbstractFlyingObject {
     public int getSpeedY() {
         return speedY;
     }
+    public int getSpeedX() {
+        return speedX;
+    }
 
     public BufferedImage getImage() {
         if (image == null){
@@ -139,6 +146,14 @@ public abstract class AbstractFlyingObject {
 
     public boolean notValid() {
         return !this.isValid;
+    }
+
+    public void setspeedY(int speed_new){
+        this.speedY = speed_new;
+    }
+
+    public void setspeedX(int speed_new){
+        this.speedX = speed_new;
     }
 
 }

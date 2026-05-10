@@ -3,6 +3,7 @@ package edu.hitsz.aircraft;
 import Strategy.CircleShoot;
 import Strategy.ShootStrategy;
 import Strategy.StraightShoot1Line;
+import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
@@ -65,5 +66,13 @@ public class BossEnemy extends AbstractAircraft{
         AbstractProp prop = new PropsFactory().createProp(PropsFactory.RandomType(),this);
         res.add(prop);
         return res;
+    }
+    @Override
+    public void vanish() {
+        super.vanish(); // 先执行父类的销毁逻辑（标记为 isValid = false）
+        AudioManager.getInstance().stopBossBGM();
+    }
+    @Override
+    public void update(String name) {
     }
 }

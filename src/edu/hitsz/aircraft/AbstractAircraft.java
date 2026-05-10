@@ -4,6 +4,7 @@ import Strategy.ShootStrategy;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.observer.Observer;
 import edu.hitsz.props.AbstractProp;
 import edu.hitsz.props.PropsFactory;
 
@@ -14,10 +15,11 @@ import java.util.List;
  * 所有种类飞机的抽象父类
  * @author hitsz
  */
-public abstract class AbstractAircraft extends AbstractFlyingObject {
+public abstract class AbstractAircraft extends AbstractFlyingObject implements Observer {
     //最大生命值
     protected int maxHp;
     protected int hp;
+
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY);
@@ -67,6 +69,33 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     }
     public void setStrategy(ShootStrategy strategy){
         this.strategy = strategy;
+    }
+
+    @Override
+    public void update(String action) {
+        if ("bomb".equals(action)) {
+            // 炸弹口令：原地爆炸
+            this.decreaseHp(Integer.MAX_VALUE);
+
+        } else if ("freeze".equals(action)) {
+            // 冰冻口令：记下当前速度，然后把速度设为 0
+            this.originalSpeedX = this.getSpeedX();
+            this.originalSpeedY = this.getSpeedY();
+            this.setspeedX(0);
+            this.setspeedY(0);
+        } else if ("restore3s".equals(action)) {
+            // 解冻口令：把纸条上的速度还回去
+            this.setspeedX(this.originalSpeedX);
+            this.setspeedY(this.originalSpeedY);
+        }else if ("restore4s".equals(action)) {
+            // 解冻口令：把纸条上的速度还回去
+            this.setspeedX(this.originalSpeedX);
+            this.setspeedY(this.originalSpeedY);
+        }else if ("restore5s".equals(action)) {
+            // 解冻口令：把纸条上的速度还回去
+            this.setspeedX(this.originalSpeedX);
+            this.setspeedY(this.originalSpeedY);
+        }
     }
 }
 
