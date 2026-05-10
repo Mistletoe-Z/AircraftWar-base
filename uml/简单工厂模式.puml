@@ -1,0 +1,56 @@
+@startuml
+title 简单工厂模式 - 飞机工厂
+
+abstract class AbstractAircraft {
+  # maxHp : int
+  # hp : int
+  + AbstractAircraft(locationX, locationY, speedX, speedY, hp)
+  + decreaseHp(decrease: int) : void
+  + getHp() : int
+  + {abstract} shoot() : List<BaseBullet>
+  + dropProps() : List<AbstractProp>
+}
+
+class MobEnemy {
+  + MobEnemy(locationX, locationY, speedX, speedY, hp)
+}
+
+class EliteEnemy {
+  + EliteEnemy(locationX, locationY, speedX, speedY, hp)
+}
+
+class EliteEnemyPro {
+  + EliteEnemyPro(locationX, locationY, speedX, speedY, hp)
+}
+
+class JokerEnemy {
+  + JokerEnemy(locationX, locationY, speedX, speedY, hp)
+}
+
+class BossEnemy {
+  + BossEnemy(locationX, locationY, speedX, speedY, hp)
+}
+
+class AircraftFactory {
+  - {static} BOSS_SCORE_THRESHOLD : int
+  - {static} bossSpawnCount : int
+  + {static} dictionary : Map<Integer, String>
+  + {static} resetBossCount() : void
+  + {static} RandomType(score: int) : String
+  + {static} createAircraft(type: String) : AbstractAircraft
+}
+
+AbstractAircraft <|-- MobEnemy
+AbstractAircraft <|-- EliteEnemy
+AbstractAircraft <|-- EliteEnemyPro
+AbstractAircraft <|-- JokerEnemy
+AbstractAircraft <|-- BossEnemy
+
+AircraftFactory ..> AbstractAircraft : creates >
+AircraftFactory ..> MobEnemy : creates >
+AircraftFactory ..> EliteEnemy : creates >
+AircraftFactory ..> EliteEnemyPro : creates >
+AircraftFactory ..> JokerEnemy : creates >
+AircraftFactory ..> BossEnemy : creates >
+
+@enduml

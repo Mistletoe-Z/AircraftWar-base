@@ -1,5 +1,6 @@
 package edu.hitsz.application;
 
+import edu.hitsz.FactoryPattern.EnemySpawner;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
@@ -80,7 +81,8 @@ public class Game extends JPanel {
                     enemySpawnCounter = 0;
                     // 产生普通敌机
                     if (enemyAircrafts.size() < enemyMaxNumber) {
-                        enemyAircrafts.add(AircraftFactory.createAircraft(AircraftFactory.RandomType(score)));
+                        enemyAircrafts.add(EnemySpawner.generateRandomEnemy(score));// 工厂模式
+                        //enemyAircrafts.add(AircraftFactory.createAircraft(AircraftFactory.RandomType(score))); //简单工厂模式
                     }
                 }
 

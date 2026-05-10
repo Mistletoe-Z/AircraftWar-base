@@ -1,0 +1,60 @@
+@startuml
+title 策略模式 - 弹道射击方式
+
+' Context
+abstract class AbstractAircraft {
+  # strategy : ShootStrategy
+  # shootDefault : ShootStrategy
+  + getShootDefault() : ShootStrategy
+  + setStrategy(strategy: ShootStrategy) : void
+  + {abstract} shoot() : List<BaseBullet>
+}
+
+class HeroAircraft {
+  - power : int
+  - directionx : int
+  - directiony : int
+  + shoot() : List<BaseBullet>
+}
+
+class BossEnemy {
+  - power : int
+  + shoot() : List<BaseBullet>
+}
+
+' Strategy
+interface ShootStrategy {
+  + shoot(aircraft: AbstractAircraft, power: int) : List<BaseBullet>
+}
+
+' Concrete Strategy
+class StraightShoot1Line {
+  + shoot(aircraft: AbstractAircraft, power: int) : List<BaseBullet>
+}
+
+class StraightShoot2Line {
+  - bulletshiftx : int
+  - shootNum : int
+  - bulletSpeed : int
+  + shoot(aircraft: AbstractAircraft, power: int) : List<BaseBullet>
+}
+
+class SansheShoot {
+  + shoot(aircraft: AbstractAircraft, power: int) : List<BaseBullet>
+}
+
+class CircleShoot {
+  + shoot(aircraft: AbstractAircraft, power: int) : List<BaseBullet>
+}
+
+AbstractAircraft <|-- HeroAircraft
+AbstractAircraft <|-- BossEnemy
+
+ShootStrategy <|.. StraightShoot1Line
+ShootStrategy <|.. StraightShoot2Line
+ShootStrategy <|.. SansheShoot
+ShootStrategy <|.. CircleShoot
+
+AbstractAircraft o--> ShootStrategy : strategy >
+
+@enduml

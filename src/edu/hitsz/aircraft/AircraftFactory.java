@@ -6,7 +6,7 @@ import java.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
-
+//这个是简单工厂方法
 public class AircraftFactory {
     public static Map<Integer,String> dictionary = new HashMap<>();
     static {

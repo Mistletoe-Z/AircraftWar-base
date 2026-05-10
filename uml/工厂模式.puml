@@ -1,0 +1,62 @@
+@startuml
+title 工厂方法模式
+
+abstract class AbstractAircraft {
+  # maxHp : int
+  # hp : int
+  + {abstract} shoot() : List<BaseBullet>
+}
+
+class MobEnemy
+class EliteEnemy
+class EliteEnemyPro
+class JokerEnemy
+class BossEnemy
+
+AbstractAircraft <|-- MobEnemy
+AbstractAircraft <|-- EliteEnemy
+AbstractAircraft <|-- EliteEnemyPro
+AbstractAircraft <|-- JokerEnemy
+AbstractAircraft <|-- BossEnemy
+
+interface EnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+class MobFactory {
+  + createAircraft() : AbstractAircraft
+}
+class EliteEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+class EliteEnemyProFactory {
+  + createAircraft() : AbstractAircraft
+}
+class JokerEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+class BossEnemyFactory {
+  + createAircraft() : AbstractAircraft
+}
+
+EnemyFactory <|.. MobFactory
+EnemyFactory <|.. EliteEnemyFactory
+EnemyFactory <|.. EliteEnemyProFactory
+EnemyFactory <|.. JokerEnemyFactory
+EnemyFactory <|.. BossEnemyFactory
+
+MobFactory ..> MobEnemy : creates >
+EliteEnemyFactory ..> EliteEnemy : creates >
+EliteEnemyProFactory ..> EliteEnemyPro : creates >
+JokerEnemyFactory ..> JokerEnemy : creates >
+BossEnemyFactory ..> BossEnemy : creates >
+
+class EnemySpawner {
+  - {static} bossSpawnCount : int
+  + {static} factoryDict : Map<Integer, EnemyFactory>
+  + {static} generateRandomEnemy(score: int) : AbstractAircraft
+}
+
+EnemySpawner o--> EnemyFactory : manages >
+
+@enduml
